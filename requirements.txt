@@ -75,7 +75,7 @@ tqdm==4.23.3
 traitlets==4.3.2
 Twisted==18.9.0
 txaio==18.8.1
-urllib3==1.22
+urllib3==1.24.1
 wcwidth==0.1.7
 win-unicode-console==0.5
 zope.interface==4.6.0
