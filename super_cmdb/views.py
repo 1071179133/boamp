@@ -9,7 +9,7 @@ import os
 
 # Create your views here.
 #创建初始账号密码
-name = "root"
+name = "super_root"
 password = "super_boamp"
 password = encryption(password) #加密密码
 if not models.User.objects.filter(name=name).first():
