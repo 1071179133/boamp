@@ -39,5 +39,5 @@
 7.访问地址：http://127.0.0.1:8000/super_cmdb/login/
 
 8.初始账号密码
-    root
+    super_root
     super_boamp
