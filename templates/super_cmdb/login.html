@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>登录</title>
+
+  <link rel="stylesheet" media="screen" href="/static/super_cmdb/css/style.css">
+  <link rel="stylesheet" type="text/css" href="/static/super_cmdb/css/reset.css"/>
+</head>
+<body>
+
+<div id="particles-js">
+		<div class="login">
+			<div class="login-top">
+				登录
+			</div>
+			<div class="login-center clearfix">
+				<div class="login-center-img"><img src="/static/super_cmdb/images/name.png"/></div>
+				<div class="login-center-input">
+					<input type="text" id="username" name="" value="" placeholder="请输入您的用户名" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的用户名'"/>
+					<div class="login-center-input-text">用户名</div>
+				</div>
+			</div>
+			<div class="login-center clearfix">
+				<div class="login-center-img"><img src="/static/super_cmdb/images/password.png"/></div>
+				<div class="login-center-input">
+					<input type="password" id="password" name=""value="" placeholder="请输入您的密码" onfocus="this.placeholder=''" onblur="this.placeholder='请输入您的密码'"/>
+					<div class="login-center-input-text">密码</div>
+				</div>
+			</div>
+			<div class="login-button" id="login_click">
+				登陆
+			</div>
+		</div>
+		<div class="sk-rotating-plane"></div>
+</div>
+
+<!-- scripts -->
+<script src="/static/super_cmdb/js/particles.min.js"></script>
+<script src="/static/super_cmdb/js/app.js"></script>
+<script src="/static/super_cmdb/js/jquery.min.js"></script>
+<script src="/static/super_cmdb/js/jquery.cookie.js"></script>
+<script type="text/javascript">
+    $(function(){
+    　　$("#login_click").click(function(){
+            var username=$("#username").val();
+            var password=$("#password").val();
+            if (username == "") {
+                alert("请输入用户名！");
+                return false;
+            }
+            if (password == "") {
+                alert("请输入密码！");
+                return false;
+            }
+            $.ajax({
+                    url: "/super_cmdb/login/",
+                    type: "POST",
+                    //data: $('#layui-form').serialize(),
+                    data: {
+                        "csrfmiddlewaretoken": '{{ csrf_token }}',
+                        "username":username,
+                        "password":password,
+                        },
+                    success: function (data) {
+                        if(data.code == 1){
+                            alert(data.msg);
+                            return false;
+                        }
+                        else {
+                            window.location.href="/super_cmdb/index/";
+                        }
+                    }
+                });
+    　　});
+    })
+</script>
+</body>
+</html>

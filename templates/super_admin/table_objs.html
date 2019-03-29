@@ -1,0 +1,146 @@
+{% extends 'super_admin/table_index.html' %}
+{% load tags %}
+
+{% block container %}
+    <div class="panel panel-info" style="position: relative">
+          <div class="panel-heading">
+              <h3 class="panel-title">{{ table_name_zh }}</h3>
+          </div>
+          <div style="position: absolute;top: 2px;right: 104px">
+              <a href="{{ request.path }}add/" class="pull-right btn btn-primary" style="color: #d9edf7;">添加</a>
+              <a href="/super_admin/index/" class="pull-right btn btn-primary" style="color: #d9edf7;">返回首页</a>
+          </div>
+          <div class="panel-body">
+
+               <div class="row" style="position: relative">
+                    <form method="get">     {#数据提交到原链接，不用写action#}
+{#                        {% for condtion in admin_class.list_filters %}#}
+                        {% for condtion in admin_class.list_filters %}
+                           <div class="col-lg-2">
+                                <span>{{ condtion.1 }}</span>
+                              {% render_filter_ele condtion.0 admin_class filter_conditions %}   {#filter_conditions:后端views返回的#}
+                           </div>
+                        {% endfor %}
+                        <button style="margin-top: 20px;margin-left: 15px" type="submit" class="btn btn-primary">检索</button>
+                        <div class="row" style="position: absolute;top: 20px;right: 119px">
+                            <div style="position: relative">
+                                <input style="width: 260px;" type="search" name="_q" class="form-control" placeholder="{% for search_field in admin_class.search_fields %}{{ search_field }},{% endfor %}" value="{{ search_text }}">
+                            </div>
+                            <div style="position: absolute;top: 0;right: 0">
+                                <button type="submit" class="btn btn-primary">搜索</button>
+                            </div>
+                        </div>
+
+                    </form>
+
+               </div>
+
+            <div style="padding-top: 30px">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                        <th style="width: 35px;"><input type="checkbox" onclick="CheckAllToggle(this)" /></th>
+                        {% for column in admin_class.list_display %}
+                            {% build_table_header_column column.0 column.1 orderby_key filter_conditions %}
+                        {% endfor %}
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <p>共 {{ query_sets.paginator.count }} 条</p>
+                        </td>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+{#                    {% get_query_sets admin_class as query_sets %}  {#as query_sets :取一个变量名 #}
+                    {% for obj in query_sets %}
+                        <tr>
+                            <td><input tag="obj_checkbox" type="checkbox" value="{{ obj.id }}"/></td>
+                            {% build_table_row request obj admin_class %}
+                        </tr>
+                    {% endfor %}
+                  </tbody>
+
+              </table>
+            </div>
+
+
+            <div class="pagination">
+
+                    {% if query_sets.has_previous %}
+                        <li><a href="?page=1{% render_url filter_conditions previous_orderby search_text %}">&laquo; 首页</a></li>
+                        <li><a href="?page={{ query_sets.previous_page_number }}{% render_url filter_conditions previous_orderby search_text %}">上页</a></li>
+                    {% endif %}
+
+                    {% for loop_counter in query_sets.paginator.page_range %}
+                        {% render_page_ele loop_counter query_sets filter_conditions previous_orderby search_text %}
+                    {% endfor %}
+
+                    {% if query_sets.has_next %}
+                        <li><a href="?page={{ query_sets.next_page_number }}{% render_url filter_conditions previous_orderby search_text %}">下页</a></li>
+                        <li><a href="?page={{ query_sets.paginator.num_pages }}{% render_url filter_conditions previous_orderby search_text %}">尾页 &raquo;</a></li>
+                    {% endif %}
+                    <li>
+                        <a style="height: 34px">
+{#                            <form method="post" action="{% url "pg_num" %}">#}
+{#                                {% csrf_token %}#}
+                                显示
+                                <select name="pg_number" id="pg_number">
+                                    <option value={{ request.session.pg_number }}>{{ request.session.pg_number }}</option>
+                                    <option value=5>5</option>
+                                    <option value=15>15</option>
+                                    <option value=30>30</option>
+                                    <option value=50>50</option>
+                                    <option value=100>100</option>
+                                    <option value=500>500</option>
+                                    <option value=999999999>全部</option>
+                                </select>条
+                                <button id="pg_number_d" style="height: 23px;background: #d9edf7;" type="submit">ok</button>
+{#                            </form>#}
+                        </a>
+                    </li>
+            </div>
+
+          </div>
+    </div>
+
+    <script src="/static/super_admin/js/jquery.min.js"></script>
+    <script>
+        //提交每页显示多少条
+        $(function () {
+            $('#pg_number_d').click(function () {	//获取点击事件触发
+                $.ajax({
+                    url: "{% url 'pg_num' %}",		//提交url
+                    type: "POST",		//以POST方式提交数据
+                    dataType: "JSON",	//以json形式提交数据
+                    data: {
+                        "csrfmiddlewaretoken": '{{ csrf_token }}',
+                        "pg_number":$("#pg_number").val(),
+                        },
+                    success: function (data) {
+                        if (data){
+                            //console.log(data);
+                            location.reload();	//提交成功后刷新页面
+                        }else {
+                            $('#error').text(obj.error);    //赋值给span便签
+                        }
+                    },
+                    error: function (err) { //发生未知错误时执行
+                        console.log(err);
+                    }
+                })
+            })
+        });
+
+        //checkbox 操作
+        function CheckAllToggle(ele){
+            if ( $(ele).prop("checked") ){
+                $("input[tag='obj_checkbox']").prop("checked",true);
+            }else {
+                $("input[tag='obj_checkbox']").prop("checked",false);
+            }
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,26 @@
+# python + opencv 实现屏幕录制
+from PIL import ImageGrab
+import numpy as np
+import cv2,os,time
+
+day_date = time.strftime("%Y-%m-%d", time.localtime())
+now_time = time.strftime("%Y%m%d_%H%M%S", time.localtime())
+video_dir = os.path.join(os.getcwd(),"video/%s"%day_date)
+if not os.path.exists(video_dir):
+    os.makedirs(video_dir)
+video_name = "%s/%s.avi"%(video_dir,now_time)
+print("开始录屏,视频文件：",video_name)
+screen = ImageGrab.grab()  # 获得当前屏幕
+k = np.zeros((200, 300), np.uint8)
+length, width = screen.size  # 获得当前屏幕的大小
+video_decode_style = cv2.VideoWriter_fourcc(*'XVID')  # 编码格式
+video = cv2.VideoWriter(video_name, video_decode_style, 7, (length, width))  # 输出文件命名为a.mp4,帧率为32，可以调节
+while True:
+    im = ImageGrab.grab()
+    imm = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)  # 转为opencv的BGR格式
+    video.write(imm)
+    cv2.imshow('enter q to quit', k)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+video.release()
+cv2.destroyAllWindows()

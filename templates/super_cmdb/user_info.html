@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>user info</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <link rel="shortcut icon" href="/static/super_cmdb/images/dog.png" type="image/x-icon" />
+        <link rel="stylesheet" href="/static/super_cmdb/css/font.css">
+        <link rel="stylesheet" href="/static/super_cmdb/css/xadmin.css">
+
+        <style>
+            td{
+                color: #127F74;
+            }
+            th{
+                width: 200px;
+            }
+        </style>
+    </head>
+    <body>
+
+    <div class="x-body layui-anim layui-anim-up" >
+        <fieldset style="border: 0">
+
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right;" href="javascript:location.replace(location.href);" title="刷新">
+                <i class="layui-icon" style="line-height:38px">ဂ</i></a>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right;" title="编辑"  onclick="x_admin_show('编辑','/super_cmdb/user_edit-{{ user_info.id }}',600,400)" href="javascript:;">
+                <i class="layui-icon" style="line-height:38px">&#xe642;</i></a>
+
+        </fieldset>
+
+        <fieldset class="layui-elem-field">
+            <legend>基本信息</legend>
+            <div class="layui-field-box">
+                <table class="layui-table" >
+                    <tbody>
+                        <tr>
+                            <th>用户名</th>
+                            <td>{{ user_info.name }}</td></tr>
+                        <tr>
+                            <th>用户类型</th>
+                            <td>{{ user_info.usertype.name }}</td></tr>
+                        <tr>
+                            <th>联系号码</th>
+                            <td>{{ user_info.phone }}</td></tr>
+                        <tr>
+                            <th>备用联系号码</th>
+                            <td>{{ user_info.phone_bak }}</td></tr>
+                        <tr>
+                            <th>用户负责的项目</th>
+                            <td>
+                                {% for project in has_project_list %}
+                                    <span>{{ project.name }}</span>
+                                {% endfor %}
+                            </td></tr>
+                        <tr>
+                            <th>座右铭</th>
+                            <td>{{ user_info.motto }}</td></tr>
+                        <tr>
+                            <th>兴趣爱好</th>
+                            <td>{{ user_info.hobby }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+
+    </div>
+    <script type="text/javascript" src="/static/super_cmdb/js/jquery.min.js"></script>
+    <script src="/static/super_cmdb/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/super_cmdb/js/xadmin.js"></script>
+    </body>
+</html>

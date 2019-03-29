@@ -1,0 +1,95 @@
+{% load install_agent_tags %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>install agent</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <link rel="stylesheet" href="/static/super_cmdb/css/font.css">
+        <link rel="stylesheet" href="/static/super_cmdb/css/xadmin.css">
+    </head>
+    <body>
+    <div class="x-body layui-anim layui-anim-up">
+        <blockquote class="layui-elem-quote">
+            <span class="x-red">{{ request.session.username }}</span>  当前时间:   <span id="show_time0"></span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top: -8px;;float:right" href="javascript:location.replace(location.href);" title="刷新">
+                <i class="layui-icon" style="line-height:38px">ဂ</i>
+            </a>
+        </blockquote>
+
+
+        <fieldset class="layui-elem-field">
+            <legend>Agent安装流程</legend>
+            <div class="layui-field-box">
+                <table class="layui-table" lay-skin="line">
+                    <tbody>
+                        <tr>
+                            <td >
+                                <a class="x-a">选择项目 --> 选择机器 --> 选择认证方式 --> 开始上传agent并部署 --> 完成</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+        <fieldset class="layui-elem-field" style="height: 400px">
+            <legend>开始安装agent</legend>
+            <div>
+                <div class="layui-form-item"></div>
+                <div class="layui-form-item"></div>
+                <div class="layui-form-item">
+                      <label for="project_id" class="layui-form-label" style="width: 100px">
+                          <span class="x-red">*</span>选择项目
+                      </label>
+                      <div class="layui-input-inline">
+                          <select id="project_id" name="project_id" style="height: 38px">
+                                {% for project_info in my_project_list %}
+                                    <option value="{{ project_info.id }}">{{ project_info.name }}</option>
+                                {% endfor %}
+                          </select>
+                      </div>
+                </div>
+
+                <div class="layui-form-item">
+                      <label class="layui-form-label" style="width: 80px;margin: auto;padding-top:26px;padding-left: 238px">
+                          <button id="click" class="layui-btn" lay-filter="click" lay-submit="">
+                              下一步
+                          </button>
+                      </label>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <script type="text/javascript" src="/static/super_cmdb/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/super_cmdb/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/super_cmdb/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/super_cmdb/js/jquery.cookie.js"></script>
+    <script>
+        //这里就一句话就可以显示时间
+        setInterval("show_time0.innerHTML=new Date().toLocaleString()+' 星期'+'日一二三四五六'.charAt(new Date().getDay());",1000);  
+
+
+        $(function () {
+            $.ajaxSetup({
+                beforeSend:function (xhr,settings) {
+                    xhr.setRequestHeader("X-CSRFtoken",$.cookie("csrftoken"));
+                }
+            })
+        });
+
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+            var form = layui.form
+            ,layer = layui.layer;
+
+            //监听提交
+            form.on('submit(click)', function(data){
+              var project_id = $("#project_id").val();
+              var jump_url = "/super_cmdb/install_agent_host_" + project_id + "/";
+              //console.log(jump_url);
+              window.location.href=jump_url;
+            });
+        });
+    </script>
+    </body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Dev record</title>
+    <link rel="stylesheet" href="/static/super_cmdb/css/reset.css">
+    <link rel="stylesheet" href="/static/super_cmdb/css/swiper.css">
+    <link rel="stylesheet" href="/static/super_cmdb/css/main.css">
+    <link rel="stylesheet" href="/static/super_cmdb/css/font.css">
+    <link rel="stylesheet" href="/static/super_cmdb/css/xadmin.css">
+
+</head>
+<body data-page="history" style="">
+
+
+
+<!--开头-->
+<div id="n-banner">
+
+</div>
+<div id="walk-history" class="w-1200">
+
+	<div class="walk-course-main r-928">
+        <div class="title">
+            <div class="title-left">开发日志 <span>Dev Record</span></div>
+            <div style="padding-left: 1010px">
+                <xblock>
+                    <button class="layui-btn" onclick="x_admin_show('添加记录','/super_cmdb/dev_record_add/',600,400)"><i class="layui-icon"></i>添加</button>
+                    <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right;margin-top: 0px;" href="javascript:location.replace(location.href);" title="刷新">
+                        <i class="layui-icon" style="line-height:38px">ဂ</i>
+                    </a>
+                </xblock>
+            </div>
+        </div>
+
+        <div class="course-content">
+            <div class="course-cen-line"></div>
+            <div class="course-swiper">
+                <ul class="f-turn">
+                    {% for dev_record in dev_record_list %}
+				        <li>
+                            <div class="left time">
+                                <h3>{{ dev_record.create_time|date:"Y-m-d H:i:s" }}</h3>
+                                <span>{{ dev_record.name }}</span>
+                                <a title="编辑"  onclick="x_admin_show('编辑','',600,400)" href="javascript:;">
+                                    <i class="layui-icon">&#xe642;</i>
+                                </a>
+                                <a title="删除" onclick="moods_del(this,'')" href="javascript:;">
+                                    <i class="layui-icon">&#xe640;</i>
+                                </a>
+                            </div>
+                                <div class="center center-right"></div>
+                                <div class="right text">{{ dev_record.content }}</div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="footer-cooperation-paging">
+            <a href="javascript:void(0)" class="footer-cooperation-paging-top">∧</a>
+            <a href="javascript:void(0)" class="footer-cooperation-paging-bottom">∨</a>
+        </div>
+    </div>
+</div>
+
+<!--结尾-->
+
+
+<script type="text/javascript" src="/static/super_cmdb/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/super_cmdb/lib/layui/layui.js" charset="utf-8"></script>
+<script type="text/javascript" src="/static/super_cmdb/js/xadmin.js"></script>
+<script src="/static/super_cmdb/js/jquery.flexslider-min.js"></script>
+<script src="/static/super_cmdb/js/main.js"></script>
+<script type="text/javascript" src="/static/super_cmdb/js/jquery.cookie.js"></script>
+<script>
+    $(function () {
+        $.ajaxSetup({
+            beforeSend:function (xhr,settings) {
+                xhr.setRequestHeader("X-CSRFtoken",$.cookie("csrftoken"));
+            }
+        })
+    });
+    function moods_del(obj,moods_id){
+          layer.confirm('确认要删除吗？',function(index){
+              //发异步删除数据
+              var url = "";
+              //console.log(url);
+              $.ajax({
+                    url: url,
+                    type: "POST",
+                    //data: $('#layui-form').serialize(),
+                    data: {"moods_id":moods_id},
+                    success: function (data) {
+                        //console.log(data);
+                    }
+                });
+              $(obj).parents("tr").remove();
+              layer.msg('已删除!',{icon:1,time:1000});
+          });
+      }
+</script>
+
+
+
+</body></html>

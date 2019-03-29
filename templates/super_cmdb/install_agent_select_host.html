@@ -1,0 +1,156 @@
+{% load install_agent_tags %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>install agent</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <link rel="stylesheet" href="/static/super_cmdb/css/font.css">
+        <link rel="stylesheet" href="/static/super_cmdb/css/xadmin.css">
+    </head>
+    <body>
+    <div class="x-body layui-anim layui-anim-up">
+        <blockquote class="layui-elem-quote">
+            <span class="x-red">{{ request.session.username }}</span>  当前时间:   <span id="show_time0"></span>
+            <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top: -8px;;float:right" href="javascript:location.replace(location.href);" title="刷新">
+                <i class="layui-icon" style="line-height:38px">ဂ</i>
+            </a>
+        </blockquote>
+
+
+        <fieldset class="layui-elem-field">
+            <legend>Agent安装流程</legend>
+            <div class="layui-field-box">
+                <table class="layui-table" lay-skin="line">
+                    <tbody>
+                        <tr>
+                            <td >
+                                <a class="x-a">选择项目 --> 选择机器 --> 选择认证方式 --> 开始上传agent并部署 --> 完成</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </fieldset>
+        <fieldset class="layui-elem-field" style="height: 400px">
+            <legend>开始安装agent</legend>
+            <div>
+                <div class="layui-form-item"></div>
+                <div class="layui-form-item">
+                      <label for="host_ip" class="layui-form-label" style="width: 100px">
+                          <span class="x-red">*</span>选择机器
+                      </label>
+                      <div class="layui-input-inline">
+                          <select id="host_ip" name="host_ip" style="height: 38px">
+                                {% for host in host_list %}
+                                    <option value="{{ host.host_ip }}">{{ host.host_ip }}</option>
+                                {% endfor %}
+                          </select>
+                      </div>
+                </div>
+                <div class="layui-form-item">
+                      <label for="host_port" class="layui-form-label" style="width: 100px">
+                          <span class="x-red">*</span>端口(默认为22)
+                      </label>
+                      <div class="layui-input-inline">
+                          <input type="text" id="host_port" name="host_port" required="" lay-verify="host_port" value=22
+                          autocomplete="off" class="layui-input">
+                      </div>
+               </div>
+                <div class="layui-form-item">
+                      <label for="auth_type" class="layui-form-label" style="width: 100px">
+                          <span class="x-red">*</span>选择认证方式
+                      </label>
+                      <div class="layui-input-inline">
+                          <select id="auth_type" name="auth_type" style="height: 38px">
+                                {% for auth_type in auth_type_list %}
+                                    <option value="{{ auth_type.auth_type }}">{{ auth_type.auth_type }}</option>
+                                {% endfor %}
+                          </select>
+                      </div>
+                </div>
+                <div class="layui-form-item">
+                      <label for="login_user" class="layui-form-label" style="width: 100px">
+                          <span class="x-red">*</span>用户
+                      </label>
+                      <div class="layui-input-inline">
+                          <input type="text" id="login_user" name="login_user" required="" lay-verify="login_user" value="root"
+                          autocomplete="off" class="layui-input">
+                      </div>
+               </div>
+                <div class="layui-form-item">
+                      <label for="password" class="layui-form-label" style="width: 100px">
+                          <span class="x-red">*</span>密码
+                      </label>
+                      <div class="layui-input-inline">
+                          <input type="password" id="password" name="password" required="" lay-verify="password" value=""
+                          autocomplete="off" class="layui-input">
+                      </div>
+               </div>
+
+                <div style="width: 318px;height: 100px">
+                    <div style="padding-left: 162px">
+                        <button id="previous" class="layui-btn" lay-filter="previous" lay-submit="">
+                          上一步
+                        </button>
+                        <button id="click" class="layui-btn" lay-filter="install" lay-submit="">
+                          安装
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </fieldset>
+    </div>
+    <script type="text/javascript" src="/static/super_cmdb/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/super_cmdb/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/super_cmdb/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/super_cmdb/js/jquery.cookie.js"></script>
+    <script>
+        //这里就一句话就可以显示时间
+        setInterval("show_time0.innerHTML=new Date().toLocaleString()+' 星期'+'日一二三四五六'.charAt(new Date().getDay());",1000);  
+
+
+        $(function () {
+            $.ajaxSetup({
+                beforeSend:function (xhr,settings) {
+                    xhr.setRequestHeader("X-CSRFtoken",$.cookie("csrftoken"));
+                }
+            })
+        });
+
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+            var form = layui.form
+            ,layer = layui.layer;
+
+            //监听提交
+            form.on('submit(previous)', function(data){
+              var jump_url = "/super_cmdb/install_agent/";
+              window.location.href=jump_url;
+            });
+
+            form.on('submit(install)', function(data){
+              //发异步，把数据提交给后端
+                var url = window.location.href;
+                $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: {
+                            "host_ip": $("#host_ip").val(),
+                            "host_port": $("#host_port").val(),
+                            "auth_type": $("#auth_type").val(),
+                            "login_user": $("#login_user").val(),
+                            "password": $("#password").val(),
+                        },
+                        success: function (data) {
+                            alert(data.message);
+                        }
+                    });
+            });
+
+        });
+    </script>
+    </body>
+</html>

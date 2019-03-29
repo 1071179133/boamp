@@ -1,0 +1,89 @@
+{% extends 'super_admin/table_index.html' %}
+{% load tags %}
+
+{% block extra-css-resource %}
+    <style type="text/css">
+        .filter-select-box{
+            height: 150px!important;
+            width: 100%;
+            border-radius: 3px;
+        }
+    </style>
+{% endblock %}
+
+{% block container %}
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{ app_name }} / {% render_table_name admin_class %} / 添加数据</h3>
+        </div>
+    </div>
+    <form class="form-horizontal" method="post" onsubmit="return SelectAllChosendata()">
+      {% csrf_token %}
+      <span style="color: red">{{ form_obj.errors }}</span>     {#有错误则显示错误信息#}
+      {% for field in form_obj %}
+          <div class="form-group">
+            <label class="col-sm-2 control-label" style="font-weight: normal">
+                {% if field.field.required %}   {#field.field.required判断不能为空#}
+                    <span style="color: red">*</span>
+                    <b>{{ field.label }}</b>
+                {% else %}
+                    {{ field.label }}
+                {% endif %}
+            </label>
+            <div class="col-sm-6">
+                {% if field.name in admin_class.filter_horizontal %}    {#判断是否是复选框#}
+                    <div class="col-md-5 ">
+                        {% get_m2m_obj_list admin_class field form_obj as m2m_obj_list %}
+                        <select id="id_{{ field.name }}_from" multiple class="filter-select-box">
+                            {% for obj in m2m_obj_list %}
+                                <option ondblclick="MoveElementTo(this,'id_{{ field.name}}_to','id_{{ field.name}}_from')" value="{{ obj.id }}">{{ obj }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <p style="padding-top: 50px">
+                            <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+                        </p>
+                        <p style="padding-top: 0">
+                            <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+                        </p>
+                    </div>
+                    <div class="col-md-5">
+                        {% get_m2m_selected_obj_list form_obj field as m2m_selected_obj_list %}
+                        <select tag="chosen_list" id="id_{{ field.name }}_to" name="{{ field.name }}" multiple class="filter-select-box">
+                            {% for obj in m2m_selected_obj_list %}
+                                <option ondblclick="MoveElementTo(this,'id_{{ field.name}}_from','id_{{ field.name}}_to')" value="{{ obj.id }}">{{ obj }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+            </div>
+          </div>
+      {% endfor %}
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <a href="#" onClick="javascript:window.history.back();return false;" class="btn btn-success">返回</a>
+          <button type="submit" class="btn btn-success">提交</button>     {#pull-right  靠右#}
+        </div>
+      </div>
+    </form>
+
+    <script>
+        function MoveElementTo(ele,target_id,new_target_id) {
+            var opt_ele = "<option value='" +  $(ele).val() + "'ondblclick=MoveElementTo(this,'" + new_target_id +"','" + target_id + "')>" + $(ele).text() + "</option>";
+            //$(ele).off().dblclick($(ele))
+            //$(ele).appendTo("#" + target_id);
+            $("#" + target_id).append(opt_ele);
+            $(ele).remove();
+        }
+
+        function SelectAllChosendata() {
+            $("select[tag='chosen_list'] option").each(function () {
+                $(this).prop("selected",true);
+            });
+            return true;
+        }
+    </script>
+{% endblock %}

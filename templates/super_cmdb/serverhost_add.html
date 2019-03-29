@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>serverhost add</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="/static/super_cmdb/css/font.css">
+    <link rel="stylesheet" href="/static/super_cmdb/css/xadmin.css">
+
+  </head>
+  
+  <body>
+    <div class="x-body layui-anim layui-anim-up">
+        <form class="layui-form" >
+          <div class="layui-form-item">
+              <label for="host_name" class="layui-form-label">
+                  <span class="x-red">*</span>机器名称
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="host_name" name="host_name" required="" lay-verify="nikename"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="host_ip" class="layui-form-label">
+                  <span class="x-red">*</span>ip地址
+              </label>
+              <div class="layui-input-inline">
+                  <input id="host_ip" name="host_ip" required="" lay-verify="host_ip"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label for="host_port" class="layui-form-label">
+                  <span class="x-red">*</span>ssh端口
+              </label>
+              <div class="layui-input-inline">
+                  <input id="host_port" name="host_port" required="" lay-verify="host_port"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+            <div class="layui-form-item">
+              <label for="project_id" class="layui-form-label">
+                  <span class="x-red">*</span>属于项目
+              </label>
+              <div class="layui-input-inline">
+                  <select id="project_id" name="project_id">
+                        {% for my_project in my_project_list %}
+                            <option value="{{ my_project.id }}">{{ my_project.name }}</option>
+                        {% endfor %}
+                  </select>
+              </div>
+            </div>
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+              </label>
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  添加
+              </button>
+          </div>
+      </form>
+    </div>
+    <script type="text/javascript" src="/static/super_cmdb/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/super_cmdb/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/super_cmdb/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/super_cmdb/js/jquery.cookie.js"></script>
+    <script>
+        $(function () {
+            $.ajaxSetup({
+                beforeSend:function (xhr,settings) {
+                    xhr.setRequestHeader("X-CSRFtoken",$.cookie("csrftoken"));
+                }
+            })
+        });
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+
+          form.on('submit(add)', function(data){
+            //console.log(data);
+            //发异步，把数据提交给django
+              $.ajax({
+                    url: "/super_cmdb/serverhost_add/",
+                    type: "POST",
+                    //data: $('#layui-form').serialize(),
+                    data: {
+                        "host_name":$("#host_name").val(),
+                        "host_ip":$("#host_ip").val(),
+                        "host_port":$("#host_port").val(),
+                        "project_id":$("#project_id").val()
+                    },
+                    success: function (data) {
+                        //console.log(data);
+                        layer.alert(data, {icon: 6});
+                    }
+                });
+            console.log(data,function () {
+                // 获得frame索引
+                var index = parent.layer.getFrameIndex(window.name);
+                //关闭当前frame
+                parent.layer.close(index);
+            });
+            return false;
+          });
+        });
+    </script>
+
+  </body>
+
+</html>

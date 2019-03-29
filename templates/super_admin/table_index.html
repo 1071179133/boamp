@@ -1,0 +1,41 @@
+{% extends 'super_admin/base.html' %}
+{% load tags %}
+{% block body %}
+
+<body style="padding-top: 0px;">
+    <div class="container" style="margin: 10px;width: auto;padding-right: 10px;padding-left: 10px;">
+        {% block container %}
+        <div class="row">
+            <div class="panel panel-info">
+                  {% for app_name,app_tables in table_list.items %}
+                      <div class="panel-heading">
+                        <h3 class="panel-title">{{ app_name }}</h3>
+                      </div>
+                      <div class="panel-body">
+                        <table class="table table-striped">
+                            {% for table_name,admin_class in app_tables.items %}
+                                <tr>
+                                    <td>
+                                       <a href="{% url 'table_objs' app_name table_name %}">       {# table_objs 是urls中的别名，匹配两个参数#}
+                                            {% render_table_name admin_class %}
+                                        </a>
+                                    </td>
+                                    <td>add</td>
+                                    <td>change</td>
+                                </tr>
+                             {% endfor %}
+                        </table>
+                      </div>
+                  {% endfor %}
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+
+
+
+
+
+</body>
+
+{% endblock %}

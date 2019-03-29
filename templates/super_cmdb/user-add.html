@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>user add</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="stylesheet" href="/static/super_cmdb/css/font.css">
+    <link rel="stylesheet" href="/static/super_cmdb/css/xadmin.css">
+
+  </head>
+  
+  <body>
+    <div class="x-body layui-anim layui-anim-up">
+        <form class="layui-form" >
+          <div class="layui-form-item">
+              <label for="L_username" class="layui-form-label">
+                  <span class="x-red">*</span>用户名
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="L_username" name="username" required="" lay-verify="nikename"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red">*</span>将会成为用户唯一的登入名
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="L_pass" class="layui-form-label">
+                  <span class="x-red">*</span>密码
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="L_pass" name="pass" required="" lay-verify="pass"
+                  autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="x-red">*</span>6到16个字符
+              </div>
+          </div>
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+                  <span class="x-red">*</span>确认密码
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="L_repass" name="repass" required="" lay-verify="repass"
+                  autocomplete="off" class="layui-input">
+              </div>
+          </div>
+            <div class="layui-form-item">
+              <label for="usertype_id" class="layui-form-label">
+                  <span class="x-red">*</span>用户类型
+              </label>
+              <div class="layui-input-inline">
+                  <select id="usertype_id" name="usertype_id">
+                        {% for user_type in user_type_list %}
+                            <option value="{{ user_type.id }}">{{ user_type.name }}</option>
+                        {% endfor %}
+                  </select>
+              </div>
+            </div>
+          <div class="layui-form-item">
+              <label for="L_repass" class="layui-form-label">
+              </label>
+              <button  class="layui-btn" lay-filter="add" lay-submit="">
+                  添加
+              </button>
+          </div>
+      </form>
+    </div>
+    <script type="text/javascript" src="/static/super_cmdb/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/super_cmdb/lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/static/super_cmdb/js/xadmin.js"></script>
+    <script type="text/javascript" src="/static/super_cmdb/js/jquery.cookie.js"></script>
+    <script>
+        $(function () {
+            $.ajaxSetup({
+                beforeSend:function (xhr,settings) {
+                    xhr.setRequestHeader("X-CSRFtoken",$.cookie("csrftoken"));
+                }
+            })
+        });
+        layui.use(['form','layer'], function(){
+            $ = layui.jquery;
+          var form = layui.form
+          ,layer = layui.layer;
+
+          //自定义验证规则
+          form.verify({
+            nikename: function(value){
+              if(value.length < 1){
+                return '昵称至少得1个字符啊';
+              }
+            }
+            ,pass: [/(.+){6,12}$/, '密码必须6到12位']
+            ,repass: function(value){
+                if($('#L_pass').val()!=$('#L_repass').val()){
+                    return '两次密码不一致';
+                }
+            }
+          });
+
+          //监听提交
+            {#$("#add").click(function (data) {#}
+            {#    console.log(data);#}
+            {#    if (data){#}
+            {#        alert("添加成功", {icon: 6});#}
+            {#    } else {#}
+            {#        alert("添加失败", {icon: 6});#}
+            {#    }#}
+            //{#})#}
+          form.on('submit(add)', function(data){
+            //console.log(data);
+            //发异步，把数据提交给django
+              $.ajax({
+                    url: "/super_cmdb/user_add/",
+                    type: "POST",
+                    //data: $('#layui-form').serialize(),
+                    data: {
+                        "user":$("#L_username").val(),
+                        "password":$("#L_pass").val(),
+                        "usertype_id":$("#usertype_id").val()
+                    },
+                    success: function (data) {
+                        //console.log(data);
+                        layer.alert(data, {icon: 6});
+                    }
+                });
+            console.log(data,function () {
+                // 获得frame索引
+                var index = parent.layer.getFrameIndex(window.name);
+                //关闭当前frame
+                parent.layer.close(index);
+            });
+            return false;
+          });
+        });
+    </script>
+
+  </body>
+
+</html>
