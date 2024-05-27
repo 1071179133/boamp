@@ -36,8 +36,8 @@ def paramiko_ssh(ip=None,port=None,password=None,login_user=None,cmd=None,pkey_f
     ssh.close()
     return retcode,result
 
-# aa = paramiko_ssh("115.159.118.25",22,"chenjw_ROOTcjw","root","free -m","./Identity")
-# aa = paramiko_ssh("139.159.157.135",22,"root123456.","root","free -m",pkey_file=None)
+# aa = paramiko_ssh("115.xx.xxx.xx",22,"xxxxx","root","free -m","./Identity")
+# aa = paramiko_ssh("139.xxx.xx.xx",22,"xxxxx.","root","free -m",pkey_file=None)
 # print(aa)
 
 def paramiko_scp(ip=None,port=None,password=None,login_user=None,source_filename=None,target_filename=None,pkey_file=None):
@@ -66,5 +66,5 @@ def paramiko_scp(ip=None,port=None,password=None,login_user=None,source_filename
     except Exception as e:
         print("文件[%s]上传到服务器[%s]失败：%s" % (source_filename, ip,e))
 
-#paramiko_scp("115.159.118.25",22,"chenjw_ROOTcjw","root","./my_paramiko_ssh.py","/tmp/my_paramiko_ssh.py","./Identity")
-#paramiko_scp("139.159.157.135",22,"root123456.","root","./my_paramiko_ssh.py","/tmp/my_paramiko_ssh.py",pkey_file=None)
+#paramiko_scp("115.1xx",22,"xxxxx","root","./my_paramiko_ssh.py","/tmp/my_paramiko_ssh.py","./Identity")
+#paramiko_scp("139.159xxx",22,"xxxxx.","root","./my_paramiko_ssh.py","/tmp/my_paramiko_ssh.py",pkey_file=None)
